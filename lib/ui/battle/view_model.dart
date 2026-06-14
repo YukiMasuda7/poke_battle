@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'dart:math';
 import 'package:poke_battle/model/package/battle_outcome_model.dart';
 import 'package:poke_battle/model/package/pokemon_model.dart';
 import 'package:poke_battle/model/search/type_relation_model.dart';
@@ -16,13 +17,14 @@ class BattleViewModel extends ChangeNotifier {
 
   final PokemonProvider _pokemonProvider;
   final TypeProvider _typeProvider;
+  final Random _random = Random();
 
   BattleStep step = BattleStep.start;
   bool isLoading = false;
   String? errorMessage;
 
   List<PokemonModel> playerPokemons = [];
-  PokemonModel? enemyPokemon;
+  List<PokemonModel> enemyPokemons = [];
   BattleOutcomeModel? battleOutcome;
 
   Future<void> startBattle() async {
@@ -32,9 +34,9 @@ class BattleViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final candidates = await _pokemonProvider.fetchRandomPokemons(4);
+      final candidates = await _pokemonProvider.fetchRandomPokemons(6);
       playerPokemons = candidates.sublist(0, 3);
-      enemyPokemon = candidates[3];
+      enemyPokemons = candidates.sublist(3, 6);
       step = BattleStep.select;
     } catch (e) {
       errorMessage = e.toString();
@@ -45,10 +47,10 @@ class BattleViewModel extends ChangeNotifier {
   }
 
   Future<void> choosePokemon(PokemonModel selected) async {
-    final enemy = enemyPokemon;
-    if (enemy == null) {
+    if (enemyPokemons.isEmpty) {
       return;
     }
+    final enemy = enemyPokemons[_random.nextInt(enemyPokemons.length)];
 
     isLoading = true;
     errorMessage = null;

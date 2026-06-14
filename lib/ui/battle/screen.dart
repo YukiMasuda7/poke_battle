@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poke_battle/model/package/pokemon_model.dart';
 import 'package:poke_battle/ui/battle/components/pokemon_option_button.dart';
 import 'package:poke_battle/ui/battle/view_model.dart';
 
@@ -109,8 +110,8 @@ class _BattleScreenState extends State<BattleScreen> {
   }
 
   Widget _buildSelect() {
-    final enemy = _viewModel.enemyPokemon;
-    if (enemy == null) {
+    final enemies = _viewModel.enemyPokemons;
+    if (enemies.isEmpty) {
       return _buildStart();
     }
 
@@ -127,18 +128,20 @@ class _BattleScreenState extends State<BattleScreen> {
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _pokemonImage(enemy.imageUrl, 110),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      '相手: ${enemy.display}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
+                  const Text(
+                    '相手ポケモン（この中からランダムで1匹が対戦）',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: enemies
+                        .map((pokemon) => _enemyPreviewCard(pokemon))
+                        .toList(),
                   ),
                 ],
               ),
@@ -158,6 +161,29 @@ class _BattleScreenState extends State<BattleScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _enemyPreviewCard(PokemonModel pokemon) {
+    return Container(
+      width: 128,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          _pokemonImage(pokemon.imageUrl, 64),
+          const SizedBox(height: 4),
+          Text(
+            pokemon.display,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
