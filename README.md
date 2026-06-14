@@ -19,7 +19,8 @@ PokeAPI を使った「ポケモンのタイプ相性じゃんけん」アプリ
 3. **選択画面**で相手ポケモン 3 匹を表示しつつ、自分のポケモン 3 匹から 1 匹を選ぶ
 4. 自分を選んだタイミングで、相手ポケモン 3 匹からランダム 1 匹が自動選出
 5. **結果画面**で勝ち / 負け / 引き分けを表示
-6. `もう一回` を押すと、2に戻る
+6. 結果画面でポケモン名をタップすると、図鑑番号・名前・画像・図鑑説明を表示
+7. `もう一回` を押すと、2に戻る
 
 ## 勝ち負けの判定方法
 
@@ -49,7 +50,7 @@ PokeAPI を使った「ポケモンのタイプ相性じゃんけん」アプリ
 
 - `start`: スタートボタン表示
 - `select`: 相手候補 3 匹表示 + 自分のポケモン選択
-- `result`: 自動選出された相手1匹との勝敗結果 + 倍率 + 再戦ボタン
+- `result`: 自動選出された相手1匹との勝敗結果 + 倍率 + 再戦ボタン + 図鑑詳細ダイアログ
 
 ## フォルダ構成
 
@@ -95,6 +96,7 @@ lib/
 - `lib/ui/battle/screen.dart`
 	- バトル画面本体。
 	- `start / select / result` の表示切り替えと、ユーザー操作の受け口を担当します。
+	- 結果画面でポケモン名タップ時に図鑑詳細ダイアログを表示します。
 
 - `lib/ui/battle/components/pokemon_option_button.dart`
 	- 自分のポケモン選択用ボタン部品。
@@ -113,6 +115,7 @@ lib/
 - `lib/provider/package/pokemon_provider.dart`
 	- ランダムなポケモン ID を生成してポケモン情報を取得。
 	- 必要数（6匹）のポケモン取得と、日本語名取得（species API）を担当します。
+	- 図鑑詳細表示用に `pokemon-species/{id}` から図鑑説明も取得します。
 
 - `lib/provider/search/type_provider.dart`
 	- タイプ相性情報（`/type/{type}`）を取得。
@@ -126,6 +129,10 @@ lib/
 
 - `lib/model/package/battle_outcome_model.dart`
 	- 勝敗結果モデル（勝ち/負け/引き分け、双方ポケモン、倍率）を定義します。
+
+- `lib/model/package/pokemon_species_detail_model.dart`
+	- 図鑑詳細ダイアログ用モデルです。
+	- 図鑑番号・名前・画像・図鑑説明を保持します。
 
 - `lib/model/search/type_relation_model.dart`
 	- タイプ相性データモデル。
@@ -144,3 +151,13 @@ flutter run
 flutter analyze
 flutter test
 ```
+
+## 図鑑詳細表示
+
+- 結果画面の `あなた:` / `あいて:` のポケモン名をタップすると図鑑ダイアログを表示します。
+- ダイアログには以下を表示します。
+	- 図鑑番号
+	- 日本語名
+	- 画像
+	- 日本語の図鑑説明
+- 図鑑説明は `GET https://pokeapi.co/api/v2/pokemon-species/{id}` から取得します。

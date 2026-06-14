@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:math';
 import 'package:poke_battle/model/package/battle_outcome_model.dart';
 import 'package:poke_battle/model/package/pokemon_model.dart';
+import 'package:poke_battle/model/package/pokemon_species_detail_model.dart';
 import 'package:poke_battle/model/search/type_relation_model.dart';
 import 'package:poke_battle/provider/package/pokemon_provider.dart';
 import 'package:poke_battle/provider/search/type_provider.dart';
@@ -81,6 +82,12 @@ class BattleViewModel extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<PokemonSpeciesDetailModel> fetchPokemonSpeciesDetail(
+    PokemonModel pokemon,
+  ) {
+    return _pokemonProvider.fetchPokemonSpeciesDetail(pokemon);
   }
 
   BattleResult _compare(double player, double enemy) {

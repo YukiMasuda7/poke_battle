@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:poke_battle/model/package/pokemon_model.dart';
+import 'package:poke_battle/model/package/pokemon_species_detail_model.dart';
 import 'package:poke_battle/ui/battle/components/pokemon_option_button.dart';
 import 'package:poke_battle/ui/battle/view_model.dart';
 
@@ -216,10 +217,9 @@ class _BattleScreenState extends State<BattleScreen> {
                   children: [
                     _pokemonImage(outcome.player.imageUrl, 96),
                     const SizedBox(height: 4),
-                    Text(
-                      'あなた: ${outcome.player.display}',
-                      textAlign: TextAlign.center,
-                      softWrap: true,
+                    _buildPokemonDetailTrigger(
+                      label: 'あなた',
+                      pokemon: outcome.player,
                     ),
                   ],
                 ),
@@ -230,10 +230,9 @@ class _BattleScreenState extends State<BattleScreen> {
                   children: [
                     _pokemonImage(outcome.enemy.imageUrl, 96),
                     const SizedBox(height: 4),
-                    Text(
-                      'あいて: ${outcome.enemy.display}',
-                      textAlign: TextAlign.center,
-                      softWrap: true,
+                    _buildPokemonDetailTrigger(
+                      label: 'あいて',
+                      pokemon: outcome.enemy,
                     ),
                   ],
                 ),
@@ -252,6 +251,91 @@ class _BattleScreenState extends State<BattleScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPokemonDetailTrigger({
+    required String label,
+    required PokemonModel pokemon,
+  }) {
+    return InkWell(
+      onTap: () => _showPokemonSpeciesDialog(pokemon),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Text(
+          '$label: ${pokemon.display}',
+          textAlign: TextAlign.center,
+          softWrap: true,
+          style: const TextStyle(
+            decoration: TextDecoration.underline,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showPokemonSpeciesDialog(PokemonModel pokemon) async {
+    final detailFuture = _viewModel.fetchPokemonSpeciesDetail(pokemon);
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('ポケモン図鑑'),
+          content: FutureBuilder<PokemonSpeciesDetailModel>(
+            future: detailFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const SizedBox(
+                  width: 240,
+                  height: 180,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              if (snapshot.hasError || !snapshot.hasData) {
+                return const SizedBox(
+                  width: 240,
+                  child: Text('図鑑情報を取得できませんでした。'),
+                );
+              }
+
+              final detail = snapshot.data!;
+
+              return SizedBox(
+                width: 280,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _pokemonImage(detail.imageUrl, 120),
+                    const SizedBox(height: 8),
+                    Text('図鑑番号: ${detail.id}'),
+                    const SizedBox(height: 4),
+                    Text(
+                      detail.nameJa,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(detail.flavorTextJa, textAlign: TextAlign.left),
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('閉じる'),
+            ),
+          ],
+        );
+      },
     );
   }
 
