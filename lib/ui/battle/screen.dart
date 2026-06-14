@@ -36,12 +36,29 @@ class _BattleScreenState extends State<BattleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('ポケモンタイプじゃんけん')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: _buildBody(),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE53935),
+              Color(0xFFE53935),
+              Colors.black,
+              Colors.black,
+              Colors.white,
+              Colors.white,
+            ],
+            stops: [0.0, 0.45, 0.45, 0.55, 0.55, 1.0],
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: _buildBody(),
+            ),
           ),
         ),
       ),
@@ -151,44 +168,64 @@ class _BattleScreenState extends State<BattleScreen> {
       return _buildStart();
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '結果: ${outcome.label}',
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
-              children: [
-                _pokemonImage(outcome.player.imageUrl, 96),
-                const SizedBox(height: 4),
-                Text('あなた: ${outcome.player.display}'),
-              ],
-            ),
-            const SizedBox(width: 20),
-            Column(
-              children: [
-                _pokemonImage(outcome.enemy.imageUrl, 96),
-                const SizedBox(height: 4),
-                Text('あいて: ${outcome.enemy.display}'),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          '倍率 あなた ${outcome.playerMultiplier}x / 相手 ${outcome.enemyMultiplier}x',
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: _viewModel.startBattle,
-          child: const Text('もう一回'),
-        ),
-      ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '結果: ${outcome.label}',
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    _pokemonImage(outcome.player.imageUrl, 96),
+                    const SizedBox(height: 4),
+                    Text(
+                      'あなた: ${outcome.player.display}',
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  children: [
+                    _pokemonImage(outcome.enemy.imageUrl, 96),
+                    const SizedBox(height: 4),
+                    Text(
+                      'あいて: ${outcome.enemy.display}',
+                      textAlign: TextAlign.center,
+                      softWrap: true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '倍率 あなた ${outcome.playerMultiplier}x / 相手 ${outcome.enemyMultiplier}x',
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _viewModel.startBattle,
+            child: const Text('もう一回'),
+          ),
+        ],
+      ),
     );
   }
 
