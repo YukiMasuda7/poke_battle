@@ -258,19 +258,38 @@ class _BattleScreenState extends State<BattleScreen> {
     required String label,
     required PokemonModel pokemon,
   }) {
+    final linkColor = Theme.of(context).colorScheme.primary;
+
     return InkWell(
       onTap: () => _showPokemonSpeciesDialog(pokemon),
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Text(
-          '$label: ${pokemon.display}',
-          textAlign: TextAlign.center,
-          softWrap: true,
-          style: const TextStyle(
-            decoration: TextDecoration.underline,
-            fontWeight: FontWeight.w600,
-          ),
+        child: Column(
+          children: [
+            Text(
+              '$label: ${pokemon.display}',
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.menu_book, size: 16, color: linkColor),
+                const SizedBox(width: 4),
+                Text(
+                  '図鑑説明を見る',
+                  style: TextStyle(
+                    color: linkColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
