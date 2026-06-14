@@ -74,6 +74,59 @@ lib/
 - `model/`: API レスポンスを扱う型
 - `router/`: 画面遷移
 
+## `lib/` ファイルごとの役割
+
+### エントリ / ルーティング
+
+- `lib/main.dart`
+	- アプリのエントリポイント。
+	- `MyApp` を起動し、`AppRouter` に処理を委譲します。
+
+- `lib/router/app_router.dart`
+	- `MaterialApp` の設定（テーマ・タイトル）と初期画面を定義します。
+	- 初期画面として `BattleScreen` を表示します。
+
+### 画面（UI）
+
+- `lib/ui/battle/screen.dart`
+	- バトル画面本体。
+	- `start / select / result` の表示切り替えと、ユーザー操作の受け口を担当します。
+
+- `lib/ui/battle/components/pokemon_option_button.dart`
+	- 自分のポケモン選択用ボタン部品。
+	- 画像・名前・タイプの表示とタップイベントを提供します。
+
+- `lib/ui/battle/view_model.dart`
+	- 画面状態（`BattleStep`, `isLoading`, `errorMessage` など）を管理。
+	- バトル開始、ポケモン選択、勝敗判定呼び出しなどの操作ロジックを持ちます。
+
+### Provider（APIアクセス）
+
+- `lib/provider/dio/poke_api_client.dart`
+	- `Dio` を使った共通 API クライアント。
+	- `https://pokeapi.co/api/v2` をベースに JSON を取得します。
+
+- `lib/provider/package/pokemon_provider.dart`
+	- ランダムなポケモン ID を生成してポケモン情報を取得。
+	- 必要数（4匹）のポケモン取得と、日本語名取得（species API）を担当します。
+
+- `lib/provider/search/type_provider.dart`
+	- タイプ相性情報（`/type/{type}`）を取得。
+	- 取得結果をキャッシュし、同じタイプの再取得を削減します。
+
+### Model（データ構造）
+
+- `lib/model/package/pokemon_model.dart`
+	- ポケモン1匹分のデータモデル（ID, 日本語名, type1, 画像URL）。
+	- APIレスポンスからモデルへ変換します。
+
+- `lib/model/package/battle_outcome_model.dart`
+	- 勝敗結果モデル（勝ち/負け/引き分け、双方ポケモン、倍率）を定義します。
+
+- `lib/model/search/type_relation_model.dart`
+	- タイプ相性データモデル。
+	- `double_damage_to / half_damage_to / no_damage_to` を保持します。
+
 ## 実行方法
 
 ```bash
@@ -87,8 +140,3 @@ flutter run
 flutter analyze
 flutter test
 ```
-
-## 補足
-
-- 画像 URL がない、または読み込みに失敗した場合は代替アイコンを表示
-- API 通信エラー時は画面にエラーメッセージと再試行ボタンを表示
