@@ -81,10 +81,7 @@ class _BattleScreenState extends State<BattleScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          'スタートでランダム4匹を取得\n自分3匹から1匹選んでタイプ勝負！',
-          textAlign: TextAlign.center,
-        ),
+        const Text('スタートで勝負開始！', textAlign: TextAlign.center),
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: _viewModel.startBattle,

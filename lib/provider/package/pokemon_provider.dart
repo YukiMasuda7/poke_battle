@@ -22,6 +22,32 @@ class PokemonProvider {
 
   Future<PokemonModel> fetchPokemon(int id) async {
     final data = await _apiClient.getJson('/pokemon/$id');
-    return PokemonModel.fromJson(data);
+    final species = await _apiClient.getJson('/pokemon-species/$id');
+
+    final japaneseName = _extractJapaneseName(species);
+    return PokemonModel.fromJson(data).copyWith(nameJa: japaneseName);
+  }
+
+  String _extractJapaneseName(Map<String, dynamic> species) {
+    final names = species['names'] as List<dynamic>?;
+    if (names == null || names.isEmpty) {
+      return species['name'] as String? ?? 'unknown';
+    }
+
+    String? findByLanguage(String languageCode) {
+      for (final entry in names) {
+        final item = entry as Map<String, dynamic>;
+        final language = item['language'] as Map<String, dynamic>?;
+        final code = language?['name'] as String?;
+        if (code == languageCode) {
+          return item['name'] as String?;
+        }
+      }
+      return null;
+    }
+
+    return findByLanguage('ja-Hrkt') ??
+        findByLanguage('ja') ??
+        (species['name'] as String? ?? 'unknown');
   }
 }
