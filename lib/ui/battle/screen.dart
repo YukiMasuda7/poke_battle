@@ -97,31 +97,51 @@ class _BattleScreenState extends State<BattleScreen> {
       return _buildStart();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
+    return Center(
+      child: SizedBox(
+        width: 460,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _pokemonImage(enemy.imageUrl, 72),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                '相手: ${enemy.display}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  _pokemonImage(enemy.imageUrl, 110),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      '相手: ${enemy.display}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              '自分のポケモンを選んでください',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 14),
+            ..._viewModel.playerPokemons.map(
+              (pokemon) => PokemonOptionButton(
+                pokemon: pokemon,
+                onPressed: () => _viewModel.choosePokemon(pokemon),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        const Text('自分のポケモンを選んでください'),
-        const SizedBox(height: 8),
-        ..._viewModel.playerPokemons.map(
-          (pokemon) => PokemonOptionButton(
-            pokemon: pokemon,
-            onPressed: () => _viewModel.choosePokemon(pokemon),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
